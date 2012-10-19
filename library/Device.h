@@ -2,6 +2,7 @@
 
 #define _DEVICE_H_
 #include "common.h"
+#include "PacketEthernetII.h"
 
 #include <string>
 #include <vector>

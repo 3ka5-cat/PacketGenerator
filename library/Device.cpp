@@ -105,32 +105,13 @@ void Device::openInterface(void)
 void Device::sendPacket(void)
 {
 	if (_netHandle == NULL)
-		openInterface();
-	u_char packet[100];
-	/* Supposing to be on ethernet, set mac destination to 1:1:1:1:1:1 */
-    packet[0]=1;
-    packet[1]=1;
-    packet[2]=1;
-    packet[3]=1;
-    packet[4]=1;
-    packet[5]=1;
-    
-    /* set mac source to 2:2:2:2:2:2 */
-    packet[6]=2;
-    packet[7]=2;
-    packet[8]=2;
-    packet[9]=2;
-    packet[10]=2;
-    packet[11]=2;
-    
-    /* Fill the rest of the packet */
-    for(int i=12;i<100;i++)
-    {
-        packet[i]=(u_char)i;
-    }
+		openInterface();	
+	PacketEthernetII eth("010101010101","020202020202","0303");
+	const unsigned int packetLen = eth.packetLen();
+	u_char* packet = new u_char[packetLen];
+	packet = eth.packet();
 
-    /* Send down the packet */
-    if (pcap_sendpacket(_netHandle, packet, 100 /* size */) != 0)
+    if (pcap_sendpacket(_netHandle, packet, packetLen) != 0)
     {
 		cerr << "Error while sending the packet" << endl;        
 		DbgMsg(__FILE__, __LINE__, 

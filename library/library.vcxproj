@@ -78,13 +78,18 @@
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PacketEthernetII.cpp" />
+    <ClCompile Include="PacketIP.cpp" />
     <ClCompile Include="pktGen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="PacketIP.h" />
+    <ClInclude Include="PacketEthernetII.h" />
     <ClInclude Include="pktGen.h" />
+    <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
