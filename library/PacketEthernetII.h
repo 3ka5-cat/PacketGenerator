@@ -1,50 +1,40 @@
 #ifndef _PKT_ETH_H_
 
 #define _PKT_ETH_H_
-#include <cstdlib>
-#include <algorithm>
 #include "common.h"
 
-static const unsigned int MACADDRLEN=6;
-static const unsigned int MACTYPELEN=2;
+static const size_t MACADDRLEN=6;
+static const size_t MACTYPELEN=2;
 class PacketEthernetII
 {
 public:
 	PacketEthernetII(void) 
 	{		
 		memset(_packet, 0, 2*MACADDRLEN+MACTYPELEN * sizeof(*_packet));
-		_macDst = _packet;
-		_macSrc = _packet + MACADDRLEN;
-		_ethType = _packet + 2 * MACADDRLEN;
+		setPointers();
 	};
-	PacketEthernetII(const char* src, const char* dst,
-		const char* type);
+	PacketEthernetII(const std::string& src, const std::string& dst,
+		const std::string& type, const unsigned int radix);
 	virtual ~PacketEthernetII(void){};
-	void dst(const char* dst)
+	void dst(const std::string& dst, const unsigned int radix)
 	{
-		if (strlen(dst) != 2*MACADDRLEN)
-			throw std::range_error("Incorrect destination MAC address length");
-		Utilities::hex2bytes(dst,_macDst,MACADDRLEN);	
+		Utilities::toBytes(dst, _macDst, MACADDRLEN, radix);		
 	};
 	unsigned char* dst(void)
 	{
 		return _macDst;
 	};
-	void src(const char* src)
-	{
-		if (strlen(src) != 2*MACADDRLEN)
-			throw std::range_error("Incorrect source MAC address length");
-		Utilities::hex2bytes(src,_macSrc,MACADDRLEN);
+	void src(const std::string& src, const unsigned int radix)
+	{	
+		Utilities::toBytes(src, _macSrc, MACADDRLEN, radix);		
 	};
 	unsigned char* src(void)
 	{
 		return _macSrc;
 	};
-	void type(const char* type)
-	{
-		if (strlen(type) != 2*MACTYPELEN)
-			throw std::range_error("Incorrect Ethernet type length");
-		Utilities::hex2bytes(type,_ethType,MACTYPELEN);	
+	void type(const std::string& type, const unsigned int radix)
+	{	
+		Utilities::toBytes(type, _ethType, MACTYPELEN, radix);		
 	};	
 	unsigned char* type(void)
 	{
@@ -54,12 +44,17 @@ public:
 	{
 		return _packet;
 	};
-	unsigned int packetLen(void)
+	unsigned int len(void)
 	{
 		return 2*MACADDRLEN+MACTYPELEN;
 	};
 private:
 	PacketEthernetII(const PacketEthernetII&);
+	void setPointers(void) {
+		_macDst = _packet;
+		_macSrc = _packet + MACADDRLEN;
+		_ethType = _packet + 2 * MACADDRLEN;
+	};
 	unsigned char _packet[2*MACADDRLEN+MACTYPELEN];
 	unsigned char* _macDst;
 	unsigned char* _macSrc;

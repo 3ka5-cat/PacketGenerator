@@ -105,17 +105,32 @@ void Device::openInterface(void)
 void Device::sendPacket(void)
 {
 	if (_netHandle == NULL)
-		openInterface();	
-	PacketEthernetII eth("010101010101","020202020202","0303");
-	const unsigned int packetLen = eth.packetLen();
+		openInterface();
+	PacketEthernetII* eth;
+	try {
+		eth = new PacketEthernetII();		
+		eth->dst("010101010101",16);
+		eth->src("020202020202",16);
+		eth->type("0800", 16);
+	}
+	catch (invalid_argument& e) {
+		cerr << "Can't create EthernetII packet with such parameters: " << endl 
+			 << e.what() << endl;
+		return;
+	}
+	const unsigned int packetLen = eth->len();
 	u_char* packet = new u_char[packetLen];
-	packet = eth.packet();
+	packet = eth->packet();
 
     if (pcap_sendpacket(_netHandle, packet, packetLen) != 0)
     {
-		cerr << "Error while sending the packet" << endl;        
+		cerr << "Error while sending the packet: " << pcap_geterr(_netHandle) << endl;        
 		DbgMsg(__FILE__, __LINE__, 
 			"pcap_sendpacket() ERROR %s\n", pcap_geterr(_netHandle));
+		delete packet;
+		delete eth;
         return;
     }
+	delete packet;
+	delete eth;
 }

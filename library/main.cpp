@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 		cout << "Enter the interface number: ";
 		getline(cin, input);
 		// This code converts from string to number safely.
-		stringstream stream(input);
+		stringstream stream(input);				
 		if (stream >> selected && selected <= generator.totalDevices() && selected > 0)
 			break;
 		cout << "Invalid number, please try again" << endl;

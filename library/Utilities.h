@@ -1,26 +1,31 @@
 #ifndef _UTILS_H_
 
 #define _UTILS_H_
-
+#include <string>
 class Utilities
 {
 public:	
-	static void hex2bytes(const char* src, unsigned char* dst, 
-		const unsigned int len)
+	static void toBytes(const std::string& src, unsigned char* dst, 
+		const size_t len, const unsigned int radix)
 	{
-		// check hex string for correct length
-		if (strlen(src) != 2*len)
-			throw std::range_error("Incorrect hex string length");
-		const char *pos = src;
-		size_t count = 0;
-		/* WARNING: no sanitization or error-checking whatsoever */
-		unsigned int tmp = 0;		
-		for(unsigned int i = 0, count = 0; count < len; count++) {
-			sscanf(pos, "%2hhx", &tmp);	
-			dst[count] = tmp >> 0;
-			pos += 2 * sizeof(char);
-		}		
-	};	
+		if (radix == 16)
+			Utilities::hex2bytes(src, dst, len);	
+		else if (radix == 10) {
+			if (len <= 4 )
+				Utilities::dec2bytes(src, dst);	
+			else
+				throw std::invalid_argument("Invalid radix. Maxmimum "
+											"four-octet fields "
+											"can be filled by decimal string");
+		}
+		else		
+			throw std::invalid_argument("Invalid radix");
+	}
+	static void hex2bytes(const std::string& src, unsigned char* dst, 
+		const size_t len);
+	static void dec2bytes(const std::string& src, unsigned char* dst);
+	static bool checkForbiddenHex(const std::string& in);
+	static bool checkForbiddenDec(const std::string& in);
 };
 
 #endif
