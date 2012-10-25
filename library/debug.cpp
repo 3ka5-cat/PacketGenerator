@@ -1,7 +1,7 @@
 #include "debug.h"
 
 HANDLE m_hDbgFile = NULL, m_hDbgFileMutex = NULL;
-/*
+
 //--------------------------------------------------------------------------------------
 BOOL DbgInit(char *lpszDbgLogPath)
 {
@@ -21,6 +21,16 @@ BOOL DbgInit(char *lpszDbgLogPath)
         {
             // OK
             SetFilePointer(m_hDbgFile, 0, NULL, FILE_END);
+			const unsigned int len = 30;
+			DWORD dwWritten = 0;
+			char *lpszBuff = (char *)M_ALLOC(len);
+			if (lpszBuff == NULL)
+				return FALSE;
+			SYSTEMTIME time;
+			GetLocalTime(&time);
+			sprintf_s(lpszBuff, len, "Dbg initialized %02d.%02d %02d:%02d\n", time.wDay, time.wMonth,time.wHour,time.wMinute);	
+			WriteFile(m_hDbgFile, lpszBuff, strlen(lpszBuff), &dwWritten, NULL);
+			M_FREE(lpszBuff);
             return TRUE;
         }
         else
@@ -90,7 +100,7 @@ void LogMsg(char *lpszFile, int iLine, char *lpszMsg, ...)
     M_FREE(lpszBuff);
     M_FREE(lpszOutBuff);
 }
-*/
+
 //--------------------------------------------------------------------------------------
 #ifdef DBG
 //--------------------------------------------------------------------------------------

@@ -27,7 +27,7 @@ public:
 	void sendPacket(int device);
 private:
 	PktGen(const PktGen&);
-	int fillDevices(void);
+	void fillDevices(void);
 	Devices _devices;
 	pcap_if_t* _alldevs;
 };

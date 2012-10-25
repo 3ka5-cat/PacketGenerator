@@ -3,6 +3,7 @@
 #define _DEVICE_H_
 #include "common.h"
 #include "PacketEthernetII.h"
+#include "PacketIPv4.h"
 
 #include <string>
 #include <vector>

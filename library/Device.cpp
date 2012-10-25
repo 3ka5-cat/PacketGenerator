@@ -1,6 +1,7 @@
 #include "Device.h"
 
 using namespace std;
+using namespace IPv4;
 
 char* Device::iptos(u_long in)
 {
@@ -96,21 +97,30 @@ void Device::openInterface(void)
                         errbuf              // error buffer
                         )) == NULL)
     {
-		cerr << "Unable to open the adapter."
-			<< _netInterface.name << " is not supported by WinPcap" << endl;         
+		cerr << "Unable to open the adapter " 
+			<< _netInterface.name << endl; 
+		DbgMsg(__FILE__, __LINE__, 
+			"pcap_open() ERROR: %s\n", errbuf);
         return;
     }
 }
 
 void Device::sendPacket(void)
 {
+	
+	unsigned char n = 170;
+	for (int k=0; k < 8; ++k) {		
+		unsigned char thebit = (n & (1 << k)) >> k;
+		printf("");
+	}
+	
 	if (_netHandle == NULL)
 		openInterface();
 	PacketEthernetII* eth;
 	try {
 		eth = new PacketEthernetII();		
-		eth->dst("010101010101",16);
-		eth->src("020202020202",16);
+		eth->dst("000C29F2178F",16);
+		eth->src("DCA97150BDBA",16);
 		eth->type("0800", 16);
 	}
 	catch (invalid_argument& e) {
@@ -118,15 +128,49 @@ void Device::sendPacket(void)
 			 << e.what() << endl;
 		return;
 	}
-	const unsigned int packetLen = eth->len();
+	PacketIPv4* ip4;	
+	try {	
+		ip4 = new PacketIPv4();	
+		//TODO: split string to byte conversation from packets logic maybe?
+		unsigned char version = 0;
+		Utilities::toBytes("4", &version, 0, 10, VERLEN);
+		ip4->version(version);
+		unsigned char ihl = 0;
+		Utilities::toBytes("5", &ihl, 0, 10, IHLLEN);
+		ip4->ihl(ihl);		
+		ip4->priorityTos("0",10);
+		ip4->delayTos(false);
+		ip4->throughputTos(false);
+		ip4->reliabilityTos(false);		
+		ip4->ecnTos("0",10);		
+		ip4->pktLen("20",10);
+		ip4->id("1",10);
+		ip4->reservedFlag(false);
+		ip4->dfFlag(false);		
+		ip4->mfFlag(false);		
+		ip4->offset("0",10);		
+		ip4->ttl("FF",16);
+		ip4->protocol("1",10);
+		ip4->hdrChecksum("AABB",16);		
+		ip4->src("3232235616",10);
+		ip4->dst("3232252803",10);
+	}
+	catch (invalid_argument& e) {
+		cerr << "Can't create IPv4 packet with such parameters: " << endl 
+			 << e.what() << endl;
+		return;
+	}
+
+	const size_t packetLen = eth->len() + ip4->len();	
 	u_char* packet = new u_char[packetLen];
-	packet = eth->packet();
+	memcpy(packet, eth->packet(), eth->len());
+	memcpy(packet + eth->len(), ip4->packet(), ip4->len());
 
     if (pcap_sendpacket(_netHandle, packet, packetLen) != 0)
     {
-		cerr << "Error while sending the packet: " << pcap_geterr(_netHandle) << endl;        
+		cerr << "Error while sending the packet" << endl;        
 		DbgMsg(__FILE__, __LINE__, 
-			"pcap_sendpacket() ERROR %s\n", pcap_geterr(_netHandle));
+			"pcap_sendpacket() ERROR: %s\n", pcap_geterr(_netHandle));
 		delete packet;
 		delete eth;
         return;

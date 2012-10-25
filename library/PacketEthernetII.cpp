@@ -6,7 +6,7 @@ PacketEthernetII::PacketEthernetII(const std::string& src, const std::string& ds
 	const std::string& type, const unsigned int radix) 
 {
 	setPointers();
-	Utilities::toBytes(src, _macSrc, MACADDRLEN, radix);
-	Utilities::toBytes(dst, _macDst, MACADDRLEN, radix);
-	Utilities::toBytes(type, _ethType, MACTYPELEN, radix);	
+	this->dst(dst, radix);
+	this->src(src, radix);
+	this->type(type, radix);	
 };

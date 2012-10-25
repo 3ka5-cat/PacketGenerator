@@ -2,7 +2,7 @@
 
 #define _PKT_ETH_H_
 #include "common.h"
-
+//Note! all lengths in bytes
 static const size_t MACADDRLEN=6;
 static const size_t MACTYPELEN=2;
 class PacketEthernetII
@@ -44,7 +44,7 @@ public:
 	{
 		return _packet;
 	};
-	unsigned int len(void)
+	size_t len(void)
 	{
 		return 2*MACADDRLEN+MACTYPELEN;
 	};

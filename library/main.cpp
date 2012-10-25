@@ -26,15 +26,15 @@ void showDevices(Devices devices)
 }
 
 int main(int argc, char* argv[])
-{
+{	
+	DbgInit("test.log");
 	PktGen& generator = *(new PktGen());
 	showDevices(generator.devices());	
 	string input = "";
 	unsigned int selected = 0;
 	while (true) {
 		cout << "Enter the interface number: ";
-		getline(cin, input);
-		// This code converts from string to number safely.
+		getline(cin, input);		
 		stringstream stream(input);				
 		if (stream >> selected && selected <= generator.totalDevices() && selected > 0)
 			break;

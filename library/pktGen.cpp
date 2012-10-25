@@ -12,7 +12,7 @@ PktGen::~PktGen(void)
 }
 
 /* Retrieve the device list from the local machine */
-int PktGen::fillDevices(void)
+void PktGen::fillDevices(void)
 {
 	char errbuf[PCAP_ERRBUF_SIZE];			
 	if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, &_alldevs,
@@ -20,8 +20,8 @@ int PktGen::fillDevices(void)
 		std::cerr << "Error while getting network\
 					 interfaces" << std::endl; 
 		DbgMsg(__FILE__, __LINE__, 
-			"pcap_findalldevs_ex() ERROR %s\n", errbuf);				
-		return RET_ERROR;
+			"pcap_findalldevs_ex() ERROR: %s\n", errbuf);				
+		return;
 	}
 
 	/* Fill the list */
@@ -33,12 +33,13 @@ int PktGen::fillDevices(void)
 
 	if (i == 0) {
 		std::cerr << "No interfaces found! Make sure\
-					 WinPcap is installed." << std::endl; 		
+					 WinPcap is installed." << std::endl; 
+		DbgMsg(__FILE__, __LINE__, 
+			"PktGen::fillDevices ERROR: allDevices list, recieved from\
+			pcap_findalldevs_ex() is empty\n");
 		pcap_freealldevs(_alldevs);
-		return RET_ERROR;
+		return;
 	}
-
-	return RET_NORMAL;
 }
 
 void PktGen::sendPacket(int device)
