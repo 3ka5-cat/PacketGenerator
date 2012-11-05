@@ -1,3 +1,6 @@
+#ifndef _COMMON_H_
+
+#define _COMMON_H_
 #pragma comment(lib, "packet.lib")
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "wpcap.lib")
@@ -13,3 +16,5 @@
 
 typedef const unsigned char MASK;
 typedef const size_t LENGTH;
+
+#endif

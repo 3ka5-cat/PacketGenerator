@@ -1,3 +1,20 @@
+/*
+#include "common.h"
+#include "TestClassCallers.h"
+
+extern "C" UNMANAGEDDLL_API PktGen* CreatePktGen()
+{
+	return new PktGen();
+}
+
+extern "C" UNMANAGEDDLL_API Devices* getDevices(PktGen* pObject)
+{
+	if(pObject != NULL)
+	{
+		return &(pObject->devices());
+	}
+}
+*/
 #include <iostream>
 #include <sstream>
 #include "pktGen.h"
@@ -5,7 +22,7 @@
 
 using namespace std;
 
-/* Print all the available information on the given interface */
+// Print all the available information on the given interface
 void showDevices(Devices devices)
 {
 	for (unsigned int i = 0; i < devices.size(); ++i) {
@@ -39,8 +56,10 @@ int main(int argc, char* argv[])
 		if (stream >> selected && selected <= generator.totalDevices() && selected > 0)
 			break;
 		cout << "Invalid number, please try again" << endl;
-	}	
-	generator.sendPacket(--selected);
+	}		
+	Device& selectedDevice = generator.device(--selected);
+	selectedDevice.sendPacket();
+
 	
 	return 0;
 }

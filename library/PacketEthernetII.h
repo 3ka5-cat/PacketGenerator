@@ -2,9 +2,10 @@
 
 #define _PKT_ETH_H_
 #include "common.h"
+namespace ETH2 {
 //Note! all lengths in bytes
-static const size_t MACADDRLEN=6;
-static const size_t MACTYPELEN=2;
+static LENGTH MACADDRLEN=6;
+static LENGTH MACTYPELEN=2;
 class PacketEthernetII
 {
 public:
@@ -60,5 +61,6 @@ private:
 	unsigned char* _macSrc;
 	unsigned char* _ethType;
 };
+}
 
 #endif

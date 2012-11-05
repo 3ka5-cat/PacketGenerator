@@ -1,6 +1,7 @@
 #include "PacketEthernetII.h"
 
 using namespace std;
+using namespace ETH2;
 
 PacketEthernetII::PacketEthernetII(const std::string& src, const std::string& dst,
 	const std::string& type, const unsigned int radix) 

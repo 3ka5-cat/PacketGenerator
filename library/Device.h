@@ -4,6 +4,9 @@
 #include "common.h"
 #include "PacketEthernetII.h"
 #include "PacketIPv4.h"
+#include "PacketUDP.h"
+#include "PacketTCP.h"
+#include "PacketICMP.h"
 
 #include <string>
 #include <vector>
@@ -43,6 +46,11 @@ public:
 	void sendPacket(void);
 private:
 	Device(const Device&);
+	IPv4::PacketIPv4* createIPv4(const std::string& formatStr);
+	UDP::PacketUDP* createUDP(const std::string& formatStr);
+	TCP::PacketTCP* createTCP(const std::string& formatStr);
+	ETH2::PacketEthernetII* createEthernet2(const std::string& formatStr);
+	ICMP::PacketICMP* createICMP(const std::string& formatStr);
 	char* ip6tos(struct sockaddr *sockaddr, char *address, int addrlen);
 	char* iptos(u_long in);
 	void openInterface(void);

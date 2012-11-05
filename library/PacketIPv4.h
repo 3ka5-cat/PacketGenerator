@@ -47,13 +47,17 @@ public:
 		delete[] _packet;
 	};
 
-	void version(const unsigned char& version)	
-	{		
-		*_verIhl |= (version << 4) & VERSION;		
+	void version(const std::string& version, const unsigned int radix)	
+	{	
+		unsigned char _version = 0;
+		Utilities::toBytes(version, &_version, 0, 10, VERLEN);
+		*_verIhl |= (_version << 4) & VERSION;		
 	};
-	void ihl(const unsigned char& ihl)
-	{		
-		*_verIhl |= ihl & IHL; 		
+	void ihl(const std::string& ihl, const unsigned int radix)	
+	{
+		unsigned char _ihl = 0;
+		Utilities::toBytes(ihl, &_ihl, 0, 10, IHLLEN);
+		*_verIhl |= _ihl & IHL; 		
 	};
 
 	void tos(const std::string& tos, const unsigned int radix)
@@ -121,6 +125,7 @@ public:
 	void offset(const std::string& offset, const unsigned int radix)
 	{
 		unsigned char _offset[2];	// 13 bit
+		memset(_offset,0,2);
 		Utilities::toBytes(offset, _offset, 0, radix, OFFSETLEN);	
 		//network order
 		*_flagsOffset |= (_offset[1] >> 4) & OFFSET;

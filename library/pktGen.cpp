@@ -20,7 +20,7 @@ void PktGen::fillDevices(void)
 		std::cerr << "Error while getting network\
 					 interfaces" << std::endl; 
 		DbgMsg(__FILE__, __LINE__, 
-			"pcap_findalldevs_ex() ERROR: %s\n", errbuf);				
+			"PktGen::fillDevices() pcap_findalldevs_ex() ERROR: %s\n", errbuf);				
 		return;
 	}
 
@@ -35,15 +35,9 @@ void PktGen::fillDevices(void)
 		std::cerr << "No interfaces found! Make sure\
 					 WinPcap is installed." << std::endl; 
 		DbgMsg(__FILE__, __LINE__, 
-			"PktGen::fillDevices ERROR: allDevices list, recieved from\
+			"PktGen::fillDevices() ERROR: allDevices list, recieved from\
 			pcap_findalldevs_ex() is empty\n");
 		pcap_freealldevs(_alldevs);
 		return;
 	}
-}
-
-void PktGen::sendPacket(int device)
-{
-	if (_alldevs)
-		_devices[device]->sendPacket();	
 }

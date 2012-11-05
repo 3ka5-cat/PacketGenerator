@@ -52,7 +52,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\WpdPack\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\WpdPack\Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -87,9 +87,14 @@
     <ClInclude Include="common.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketICMP.h" />
     <ClInclude Include="PacketIPv4.h" />
     <ClInclude Include="PacketEthernetII.h" />
+    <ClInclude Include="PacketTCP.h" />
+    <ClInclude Include="PacketUDP.h" />
     <ClInclude Include="pktGen.h" />
+    <ClInclude Include="TestClassCallers.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
