@@ -4,7 +4,7 @@
 #include "common.h"
 #include <vector>
 #include "Device.h"
-
+#include "FileWorker.h"
 
 //#define UNMANAGEDDLL_API __declspec(dllexport)
 
@@ -23,27 +23,12 @@ public:
 	{
 		return _devices;
 	};	
-	Device& device(unsigned int device)
-	{
-		if (_alldevs && device > 0 && device < totalDevices())
-			return *_devices[device];
-		else {
-			std::cerr << "No such device" << std::endl; 
-			if (!_alldevs)
-				DbgMsg(__FILE__, __LINE__, 
-					"PktGen::device ERROR: trying to select device\
-					from uninitialized _alldevs\n");
-			else
-				DbgMsg(__FILE__, __LINE__, 
-					"PktGen::device ERROR: trying to select device\
-					with wrong number %u\n", device);
-		}
-	};	
+	Device* device(unsigned int device);		
 private:
 	PktGen(const PktGen&);
 	void fillDevices(void);
 	Devices _devices;
-	pcap_if_t* _alldevs;
+	pcap_if_t* _alldevs;	
 };
 
 #endif

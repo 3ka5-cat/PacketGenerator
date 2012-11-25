@@ -1,11 +1,6 @@
 #include "Device.h"
 
 using namespace std;
-using namespace ETH2;
-using namespace IPv4;
-using namespace UDP;
-using namespace TCP;
-using namespace ICMP;
 
 char* Device::iptos(u_long in)
 {
@@ -41,9 +36,9 @@ char* Device::ip6tos(struct sockaddr *sockaddr, char *address, int addrlen)
     return address;
 }
 
-
 Device::Device(pcap_if_t* pcap_if) : _netHandle(NULL), 
-	_netInterface(*pcap_if)
+	_netInterface(*pcap_if), eth(NULL), ip4(NULL), 
+	icmp(NULL), tcp(NULL), udp(NULL)
 {	
 	_name = _netInterface.name;
 	if (_netInterface.description)
@@ -87,6 +82,7 @@ Device::Device(pcap_if_t* pcap_if) : _netHandle(NULL),
 
 Device::~Device(void)
 {
+	deletePacket();
 }
 
 void Device::openInterface(void)
@@ -101,25 +97,27 @@ void Device::openInterface(void)
                         errbuf              // error buffer
                         )) == NULL)
     {
-		cerr << "Unable to open the adapter " 
-			<< _netInterface.name << endl; 
+		setGlobalError(string("Unable to open the adapter ").append(_netInterface.name));
 		DbgMsg(__FILE__, __LINE__, 
 			"Device::openInterface() pcap_open() ERROR: %s\n", errbuf);
         return;
     }
 }
 
-PacketUDP* Device::createUDP(const string& formatStr)
+UDP::PacketUDP* Device::createUDP(const string& formatStr)
 {
 	TokenAndRadix src, dst, checksum, pktLen;
 	if (!Utilities::parseUDPFormat(formatStr, src, 
 		dst, checksum, pktLen)) {
-			cerr << "Can't parse UDP format" << endl;
+			setGlobalError("Can't parse UDP format");
+			DbgMsg(__FILE__, __LINE__, 
+				"Device::createUDP() parseUDPFormat() ERROR: wrong format %s\n",
+				formatStr.c_str());
 			return NULL;
 	}
-	PacketUDP* udp;
+	UDP::PacketUDP* udp;
 	try{
-		udp = new PacketUDP();
+		udp = new UDP::PacketUDP();
 		udp->srcPort(src.token, src.radix);		
 		udp->dstPort(dst.token, dst.radix);
 		udp->checksum(checksum.token, checksum.radix);
@@ -132,25 +130,28 @@ PacketUDP* Device::createUDP(const string& formatStr)
 		*/
 	}
 	catch (invalid_argument& e) {
-		cerr << "Can't create UDP packet with such parameters: " << endl 
-			 << e.what() << endl;
+		setGlobalError(
+			string("Can't create UDP packet with such parameters: ").append(e.what()));
 		delete udp;
 		return NULL;
 	}
 	return udp;
 }
 
-PacketICMP* Device::createICMP(const string& formatStr)
+ICMP::PacketICMP* Device::createICMP(const string& formatStr)
 {
 	TokenAndRadix type, code, checksum, id, seq;
 	if (!Utilities::parseICMPFormat(formatStr, type, 
 		code, checksum, id, seq)) {
-			cerr << "Can't parse ICMP format" << endl;
+			setGlobalError("Can't parse ICMP format");
+			DbgMsg(__FILE__, __LINE__, 
+				"Device::createICMP() parseICMPFormat() ERROR: wrong format %s\n",
+				formatStr.c_str());
 			return NULL;
 	}
-	PacketICMP* icmp;
+	ICMP::PacketICMP* icmp;
 	try{
-		icmp = new PacketICMP();
+		icmp = new ICMP::PacketICMP();
 		icmp->type(type.token, type.radix);		
 		icmp->code(code.token, code.radix);
 		icmp->checksum(checksum.token, checksum.radix);
@@ -158,15 +159,15 @@ PacketICMP* Device::createICMP(const string& formatStr)
 		icmp->seq(seq.token,seq.radix);
 	}
 	catch (invalid_argument& e) {
-		cerr << "Can't create ICMP packet with such parameters: " << endl 
-			 << e.what() << endl;
+		setGlobalError(
+			string("Can't create ICMP packet with such parameters: ").append(e.what()));			 
 		delete icmp;
 		return NULL;
 	}
 	return icmp;
 }
 
-PacketTCP* Device::createTCP(const string& formatStr)
+TCP::PacketTCP* Device::createTCP(const string& formatStr)
 {	
 	TokenAndRadix src, dst, seq, ack, offset, 
 		reserved, flags, windowSize, checksum,
@@ -174,12 +175,15 @@ PacketTCP* Device::createTCP(const string& formatStr)
 	if (!Utilities::parseTCPFormat(formatStr, src, dst, seq, ack, offset, 
 		reserved, flags, windowSize, checksum,
 		urgentPointer)) {
-			cerr << "Can't parse TCP format" << endl;
-		return NULL;
+			setGlobalError("Can't parse TCP format");
+			DbgMsg(__FILE__, __LINE__, 
+				"Device::createTCP() parseTCPFormat() ERROR: wrong format %s\n",
+				formatStr.c_str());
+			return NULL;
 	}
-	PacketTCP* tcp;
+	TCP::PacketTCP* tcp;
 	try {
-		tcp = new PacketTCP();
+		tcp = new TCP::PacketTCP();
 		tcp->srcPort(src.token,src.radix);
 		tcp->dstPort(dst.token,dst.radix);
 		tcp->seq(seq.token,seq.radix);
@@ -210,15 +214,15 @@ PacketTCP* Device::createTCP(const string& formatStr)
 		*/
 	}
 	catch (invalid_argument& e) {
-		cerr << "Can't create TCP packet with such parameters: " << endl 
-			 << e.what() << endl;
+		setGlobalError(
+			string("Can't create TCP packet with such parameters: ").append(e.what()));			 
 		delete tcp;
 		return NULL;
 	}
 	return tcp;
 }
 
-PacketIPv4* Device::createIPv4(const string& formatStr)
+IPv4::PacketIPv4* Device::createIPv4(const string& formatStr)
 {
 	TokenAndRadix version, ihl, tos, pktLen, id, 
 		flags, offset, ttl, protocol, hdrChecksum, 
@@ -226,12 +230,15 @@ PacketIPv4* Device::createIPv4(const string& formatStr)
 	if (!Utilities::parseIPv4Format(formatStr, version, 
 		ihl, tos, pktLen, id, flags, offset, ttl, 
 		protocol, hdrChecksum, src, dst)) {
-			cerr << "Can't parse IPv4 format" << endl;
+			setGlobalError("Can't parse IPv4 format");
+			DbgMsg(__FILE__, __LINE__, 
+				"Device::createIPv4() parseIPv4Format() ERROR: wrong format %s\n",
+				formatStr.c_str());
 			return NULL;
 	}
-	PacketIPv4* ip4;
+	IPv4::PacketIPv4* ip4;
 	try {	
-		ip4 = new PacketIPv4();	
+		ip4 = new IPv4::PacketIPv4();	
 		ip4->version(version.token, version.radix);		
 		ip4->ihl(ihl.token,ihl.radix);				
 		ip4->tos(tos.token,tos.radix);		
@@ -266,24 +273,27 @@ PacketIPv4* Device::createIPv4(const string& formatStr)
 		*/
 	}
 	catch (invalid_argument& e) {
-		cerr << "Can't create IPv4 packet with such parameters: " << endl 
-			 << e.what() << endl;
+		setGlobalError(
+			string("Can't create IPv4 packet with such parameters: ").append(e.what()));			 
 		delete ip4;
 		return NULL;
 	}
 	return ip4;
 }
 
-PacketEthernetII* Device::createEthernet2(const string& formatStr)
+ETH2::PacketEthernetII* Device::createEthernet2(const string& formatStr)
 {		
 	TokenAndRadix src,dst,type;
 	if (!Utilities::parseEthFormat(formatStr, src, dst, type)) {
-		cerr << "Can't parse ETH2 format" << endl;
+		setGlobalError("Can't parse ETH2 format");
+		DbgMsg(__FILE__, __LINE__, 
+			"Device::createEthernet2() parseEthFormat() ERROR: wrong format %s\n",
+			formatStr.c_str());		
 		return NULL;
 	}
-	PacketEthernetII* eth;
+	ETH2::PacketEthernetII* eth;
 	try {
-		eth = new PacketEthernetII();	
+		eth = new ETH2::PacketEthernetII();	
 		/*
 		eth->dst("000C29F2178F",16);
 		eth->src("DCA97150BDBA",16);
@@ -294,70 +304,168 @@ PacketEthernetII* Device::createEthernet2(const string& formatStr)
 		eth->type(type.token,type.radix);
 	}
 	catch (invalid_argument& e) {
-		cerr << "Can't create EthernetII packet with such parameters: " << endl 
-			 << e.what() << endl;
+		setGlobalError(
+			string("Can't create EthernetII packet with such parameters: ").append(e.what()));
 		delete eth;
 		return NULL;
 	}	
 	return eth;
 }
 
-void Device::sendPacket(void)
+bool Device::buildPackets(const Tokens& formats, bool validateOnly)
 {
-	if (!_netHandle)
-		openInterface();
+	packetLen = 0;
+	bool transport = false;
+	for (size_t i = 0; i < formats.size(); ++i) {
+		DbgMsg(__FILE__, __LINE__,
+			"%u format: %s\n", i, formats[i].c_str());
+		if (Utilities::startsWith(formats[i], ETH2PROTO)) {			
+			if (eth)
+				delete eth;
+			//ETH2:src,radix;dst,radix;type,radix
+			eth = createEthernet2(formats[i]);
+			//"ETH2:000C29F2178F,16;DCA97150BDBA,16;0800,16;");
+			if (!eth) {
+				deletePacket();
+				return false;			
+			}
+			packetLen += eth->len();			
+		}
+		else if (Utilities::startsWith(formats[i], IPV4PROTO)) {				
+			//IPv4:version,radix;ihl,radix;tos,radix;pktLen,radix;id,radix;flags,radix;
+			//offset,radix;ttl,radix;protocol,radix;hdrChecksum,radix;src,radix;dst,radix;
+			if (ip4)
+				delete ip4;
+			ip4 = createIPv4(formats[i]);
+			//"IPv4:4,10;5,10;65530,10;40,10;1,10;7,10;0,10;FF,16;1,10;AABB,16;3232235616,10;3232252803,10;"
+			if (!ip4) {
+				deletePacket();
+				return false;	
+			}
+			packetLen += ip4->len();
+		}
+		else if (Utilities::startsWith(formats[i], UDPPROTO)) {
+			if (!transport) {
+				transport = true;
+				//UDP:src,radix;dst,radix;checksum,radix;pktLen,radix;
+				if (udp)
+					delete udp;
+				udp = createUDP(formats[i]);
+				//"UDP:17500,10;17500,10;CF75,16;8,10;"
+				if (!udp) {
+					deletePacket();
+					return false;	
+				}
+				packetLen += udp->len();
+			}
+			else {
+				setGlobalError("Several transport layer protocols");
+				DbgMsg(__FILE__, __LINE__, 
+					"Device::buildPackets() ERROR: several transport layer protocols\n");	
+				deletePacket();
+				return false;			
+			}
+		}
+		else if (Utilities::startsWith(formats[i], TCPPROTO)) {	
+			if (!transport) {
+				transport = true;
+				if (tcp)
+					delete tcp;
+				//TCP:src,radix;dst,radix;seq,radix;ack,radix;offset,radix;reserved,radix;flags,radix;windowSize,radix;checksum,radix;urgentPointer,radix;
+				tcp = createTCP(formats[i]);
+				//"TCP:80,10;5754,10;EFA88B77,16;9E6393BF,16;5,10;0,10;0,10;93,10;942B,16;0,10;"
+				if (!tcp) {
+					deletePacket();
+					return false;	
+				}
+				packetLen += tcp->len();
+			}
+			else {
+				setGlobalError("Several transport layer protocols");
+				DbgMsg(__FILE__, __LINE__, 
+					"Device::buildPackets() ERROR: several transport layer protocols\n");	
+				deletePacket();
+				return false;			
+			}
+		}
+		else if (Utilities::startsWith(formats[i], ICMPPROTO)) {	
+			if (!transport) {
+				transport = true;
+				if (icmp)
+					delete icmp;
+				//ICMP:type,radix;code,radix;checksum,radix;id,radix;seq,radix;
+				icmp = createICMP(formats[i]);
+				//"ICMP:0,10;0,10;CF75,16;1,10;1,10;"
+				if (!icmp) {
+					deletePacket();
+					return false;	
+				}
+				packetLen += icmp->len();
+			}
+			else {
+				setGlobalError("Several transport layer protocols");
+				DbgMsg(__FILE__, __LINE__, 
+					"Device::buildPackets() ERROR: several transport layer protocols\n");	
+				deletePacket();
+				return false;			
+			}
+		}
+	}	
+	if (packetLen) {
+		if (validateOnly)
+			deletePacket();
+		return true;
+	}
+	else { 
+		setGlobalError("Empty formats");
+		return false;
+	}
+}
 
-	//UDP:src,radix>dst,radix;checksum,radix;pktLen,radix;
-	PacketUDP* udp = createUDP("UDP:17500,10>17500,10;CF75,16;8,10;");
-	if (!udp)
-		return;
-	//TCP:src,radix>dst,radix;seq,radix;ack,radix;offset,radix;reserved,radix;flags,radix;windowSize,radix;checksum,radix;urgentPointer,radix;
-	PacketTCP* tcp = createTCP("TCP:80,10>5754,10;EFA88B77,16;9E6393BF,16;5,10;0,10;0,10;93,10;942B,16;0,10;");
-	if (!tcp)
-		return;
-	//ICMP:type,radix;code,radix;checksum,radix;id,radix;seq,radix;
-	PacketICMP* icmp = createICMP("ICMP:0,10;0,10;CF75,16;1,10;1,10;");
-	if (!icmp)
-		return;
-	//IPv4:version,radix;ihl,radix;tos,radix;pktLen,radix;id,radix;flags,radix;
-	//offset,radix;ttl,radix;protocol,radix;hdrChecksum,radix;src,radix;dst,radix;
-	PacketIPv4* ip4 = createIPv4("IPv4:4,10;5,10;65530,10;40,10;1,10;7,10;0,10;FF,16;1,10;AABB,16;3232235616,10;3232252803,10;");
-	if (!ip4)
-		return;
-	//ETH2:src,radix>dst,radix;type,radix
-	PacketEthernetII* eth = createEthernet2(
-		"ETH2:000C29F2178F,16>DCA97150BDBA,16;0800,16;");
-	if (!eth)
-		return;	
-
-	const size_t packetLen = eth->len() + ip4->len() + icmp->len();
-	//const size_t packetLen = eth->len() + ip4->len() + tcp->len();
-	//const size_t packetLen = eth->len() + ip4->len() + udp->len();	
-	//unsigned int data = 0xffffffff;
-	u_char* packet = new u_char[packetLen];
-	memcpy(packet, eth->packet(), eth->len());
-	memcpy(packet + eth->len(), ip4->packet(), ip4->len());	
-	memcpy(packet + eth->len() + ip4->len(), icmp->packet(), icmp->len());
-	//memcpy(packet + eth->len() + ip4->len(), tcp->packet(), tcp->len());
-	//memcpy(packet + eth->len() + ip4->len(), udp->packet(), udp->len());
-	//memcpy(packet + eth->len() + ip4->len() + udp->len(), &data, sizeof(unsigned int));
-
-    if (pcap_sendpacket(_netHandle, packet, packetLen) != 0) {
-		cerr << "Error while sending the packet" << endl;        
-		DbgMsg(__FILE__, __LINE__, 
-			"Device::sendPacket() pcap_sendpacket() ERROR: %s\n", pcap_geterr(_netHandle));
-		delete packet;
-		delete eth;
-		delete ip4;
-		delete udp;
-		delete tcp;
-		delete icmp;
-        return;
-    }
-	delete packet;
+void Device::deletePacket(void)
+{
+	packetLen = 0;
 	delete eth;
 	delete ip4;
 	delete udp;
 	delete tcp;
 	delete icmp;
+	eth = NULL;
+	ip4 = NULL;
+	udp = NULL;
+	tcp = NULL;
+	icmp = NULL;
+}
+
+void Device::sendPacket(const Tokens& formats, unsigned int count)
+{	
+	if (!_netHandle)
+		openInterface();		
+	//unsigned int data = 0xffffffff;
+	if (packetLen > 0 && packetLen < 65535) {
+		u_char* packet = new u_char[packetLen];
+		if (eth)
+			memcpy(packet, eth->packet(), eth->len());
+		if (ip4)
+			memcpy(packet + eth->len(), ip4->packet(), ip4->len());	
+		if (tcp)
+			memcpy(packet + eth->len() + ip4->len(), tcp->packet(), tcp->len());
+		if (icmp)
+			memcpy(packet + eth->len() + ip4->len(), icmp->packet(), icmp->len());
+		if (udp)
+			memcpy(packet + eth->len() + ip4->len(), udp->packet(), udp->len());
+		//memcpy(packet + eth->len() + ip4->len() + udp->len(), &data, sizeof(unsigned int));
+		if (pcap_sendpacket(_netHandle, packet, packetLen) != 0) {
+				setGlobalError("Error while sending the packet");        
+				DbgMsg(__FILE__, __LINE__, 
+					"Device::sendPacket() pcap_sendpacket() ERROR: %s\n", pcap_geterr(_netHandle));			
+		}	
+		delete[] packet;
+	}
+	else {
+		setGlobalError("Error while sending the packet: packet is empty");        
+		DbgMsg(__FILE__, __LINE__, 
+			"Device::sendPacket() ERROR: packet wasn't initialized\n");		
+	}
+
 }

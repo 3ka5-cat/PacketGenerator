@@ -1,6 +1,7 @@
 #ifndef _DEVICE_H_
 
 #define _DEVICE_H_
+
 #include "common.h"
 #include "PacketEthernetII.h"
 #include "PacketIPv4.h"
@@ -43,9 +44,11 @@ public:
 	{
 		return _loopback;
 	};
-	void sendPacket(void);
+	bool buildPackets(const Tokens& formats, bool validateOnly = false);	
+	void sendPacket(const Tokens& formats, unsigned int count = -1);
 private:
 	Device(const Device&);
+	void deletePacket(void);
 	IPv4::PacketIPv4* createIPv4(const std::string& formatStr);
 	UDP::PacketUDP* createUDP(const std::string& formatStr);
 	TCP::PacketTCP* createTCP(const std::string& formatStr);
@@ -61,6 +64,14 @@ private:
 	std::string _description;
 	bool _loopback;
 	InterfaceAddresses _addresses;	
+
+
+	size_t packetLen;
+	ETH2::PacketEthernetII* eth;	
+	IPv4::PacketIPv4* ip4;	
+	ICMP::PacketICMP* icmp;
+	TCP::PacketTCP* tcp;
+	UDP::PacketUDP* udp;
 };
 
 #endif

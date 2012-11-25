@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "library", "library\library.vcxproj", "{EC882D5A-8318-4358-8159-933A0A801484}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pugixml_vs2010_static", "pugixml\scripts\pugixml_vs2010_static.vcxproj", "{89A1E353-E2DC-495C-B403-742BE206ACED}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTGUI", "QTGUI\QTGUI.vcxproj", "{4F97E1BC-6283-4882-869F-9467BF5F4231}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -17,12 +23,40 @@ Global
 		{EC882D5A-8318-4358-8159-933A0A801484}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Debug|Win32.ActiveCfg = Debug|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Debug|Win32.Build.0 = Debug|Win32
+		{EC882D5A-8318-4358-8159-933A0A801484}.Debug|x64.ActiveCfg = Debug|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Debug|x86.ActiveCfg = Debug|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Release|Win32.ActiveCfg = Release|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Release|Win32.Build.0 = Release|Win32
+		{EC882D5A-8318-4358-8159-933A0A801484}.Release|x64.ActiveCfg = Release|Win32
 		{EC882D5A-8318-4358-8159-933A0A801484}.Release|x86.ActiveCfg = Release|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|Win32.Build.0 = Debug|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|x64.ActiveCfg = Debug|x64
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|x64.Build.0 = Debug|x64
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Debug|x86.ActiveCfg = Debug|x64
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|Win32.ActiveCfg = Release|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|Win32.Build.0 = Release|Win32
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|x64.ActiveCfg = Release|x64
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|x64.Build.0 = Release|x64
+		{89A1E353-E2DC-495C-B403-742BE206ACED}.Release|x86.ActiveCfg = Release|x64
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Debug|Win32.Build.0 = Debug|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Debug|x64.ActiveCfg = Debug|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Release|Win32.ActiveCfg = Release|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Release|Win32.Build.0 = Release|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Release|x64.ActiveCfg = Release|Win32
+		{4F97E1BC-6283-4882-869F-9467BF5F4231}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
