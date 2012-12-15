@@ -193,7 +193,7 @@ TCP::PacketTCP* Device::createTCP(const string& formatStr)
 		tcp->flags(flags.token,flags.radix);		
 		tcp->windowSize(windowSize.token,windowSize.radix);
 		tcp->checksum(checksum.token,checksum.radix);
-		tcp->urgentPointer(checksum.token,checksum.radix);
+		tcp->urgentPointer(urgentPointer.token,urgentPointer.radix);
 		/*
 		tcp->srcPort("80",10);
 		tcp->dstPort("52754",10);
@@ -314,6 +314,7 @@ ETH2::PacketEthernetII* Device::createEthernet2(const string& formatStr)
 
 bool Device::buildPackets(const Tokens& formats, bool validateOnly)
 {
+	//TODO: think about several transport layer conflict
 	packetLen = 0;
 	bool transport = false;
 	for (size_t i = 0; i < formats.size(); ++i) {
@@ -350,6 +351,14 @@ bool Device::buildPackets(const Tokens& formats, bool validateOnly)
 				//UDP:src,radix;dst,radix;checksum,radix;pktLen,radix;
 				if (udp)
 					delete udp;
+				if (tcp) {
+					delete tcp;
+					tcp = NULL;
+				}
+				if (icmp) {
+					delete icmp;
+					icmp = NULL;
+				}				
 				udp = createUDP(formats[i]);
 				//"UDP:17500,10;17500,10;CF75,16;8,10;"
 				if (!udp) {
@@ -371,6 +380,14 @@ bool Device::buildPackets(const Tokens& formats, bool validateOnly)
 				transport = true;
 				if (tcp)
 					delete tcp;
+				if (udp) {
+					delete udp;
+					udp = NULL;
+				}
+				if (icmp) {
+					delete icmp;
+					icmp = NULL;
+				}
 				//TCP:src,radix;dst,radix;seq,radix;ack,radix;offset,radix;reserved,radix;flags,radix;windowSize,radix;checksum,radix;urgentPointer,radix;
 				tcp = createTCP(formats[i]);
 				//"TCP:80,10;5754,10;EFA88B77,16;9E6393BF,16;5,10;0,10;0,10;93,10;942B,16;0,10;"
@@ -393,6 +410,14 @@ bool Device::buildPackets(const Tokens& formats, bool validateOnly)
 				transport = true;
 				if (icmp)
 					delete icmp;
+				if (tcp) {
+					delete tcp;
+					tcp = NULL;
+				}
+				if (udp) {
+					delete udp;
+					udp = NULL;
+				}
 				//ICMP:type,radix;code,radix;checksum,radix;id,radix;seq,radix;
 				icmp = createICMP(formats[i]);
 				//"ICMP:0,10;0,10;CF75,16;1,10;1,10;"
@@ -439,6 +464,7 @@ void Device::deletePacket(void)
 
 void Device::sendPacket(const Tokens& formats, unsigned int count)
 {	
+	//TODO: add data fields
 	if (!_netHandle)
 		openInterface();		
 	//unsigned int data = 0xffffffff;
@@ -446,13 +472,20 @@ void Device::sendPacket(const Tokens& formats, unsigned int count)
 		u_char* packet = new u_char[packetLen];
 		if (eth)
 			memcpy(packet, eth->packet(), eth->len());
+		else {
+			setGlobalError("Error while sending the packet: Ethernet header isn't specified");        
+			DbgMsg(__FILE__, __LINE__, 
+				"Device::sendPacket() ERROR: Ethernet header wasn't specified\n");	
+			deletePacket();
+			return;
+		}
 		if (ip4)
-			memcpy(packet + eth->len(), ip4->packet(), ip4->len());	
-		if (tcp)
+			memcpy(packet + eth->len(), ip4->packet(), ip4->len());
+		if (tcp && ip4)
 			memcpy(packet + eth->len() + ip4->len(), tcp->packet(), tcp->len());
-		if (icmp)
+		if (icmp && ip4)
 			memcpy(packet + eth->len() + ip4->len(), icmp->packet(), icmp->len());
-		if (udp)
+		if (udp && ip4)
 			memcpy(packet + eth->len() + ip4->len(), udp->packet(), udp->len());
 		//memcpy(packet + eth->len() + ip4->len() + udp->len(), &data, sizeof(unsigned int));
 		if (pcap_sendpacket(_netHandle, packet, packetLen) != 0) {
@@ -460,12 +493,12 @@ void Device::sendPacket(const Tokens& formats, unsigned int count)
 				DbgMsg(__FILE__, __LINE__, 
 					"Device::sendPacket() pcap_sendpacket() ERROR: %s\n", pcap_geterr(_netHandle));			
 		}	
-		delete[] packet;
+		delete[] packet;		
 	}
 	else {
 		setGlobalError("Error while sending the packet: packet is empty");        
 		DbgMsg(__FILE__, __LINE__, 
 			"Device::sendPacket() ERROR: packet wasn't initialized\n");		
 	}
-
+	deletePacket();
 }

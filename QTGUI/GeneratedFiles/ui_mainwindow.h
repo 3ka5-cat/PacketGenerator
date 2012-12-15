@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Mon 26. Nov 02:17:37 2012
+** Created: Wed 12. Dec 02:27:06 2012
 **      by: Qt User Interface Compiler version 4.8.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -471,7 +471,7 @@ public:
         deviceDescriptionTab->setObjectName(QString::fromUtf8("deviceDescriptionTab"));
         deviceDescription = new QTextBrowser(deviceDescriptionTab);
         deviceDescription->setObjectName(QString::fromUtf8("deviceDescription"));
-        deviceDescription->setGeometry(QRect(-1, -1, 387, 87));
+        deviceDescription->setGeometry(QRect(-1, -1, 387, 101));
         etcTabs->addTab(deviceDescriptionTab, QString());
         savedPacketsTab = new QWidget();
         savedPacketsTab->setObjectName(QString::fromUtf8("savedPacketsTab"));
@@ -483,7 +483,12 @@ public:
         loadPacketFileBtn->setGeometry(QRect(2, 2, 72, 23));
         packetsView = new QTreeView(savedPacketsTab);
         packetsView->setObjectName(QString::fromUtf8("packetsView"));
-        packetsView->setGeometry(QRect(78, -1, 308, 101));
+        packetsView->setGeometry(QRect(78, -1, 308, 97));
+        packetsView->setAutoFillBackground(true);
+        packetsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        packetsView->setHeaderHidden(true);
+        packetsView->header()->setCascadingSectionResizes(true);
+        packetsView->header()->setStretchLastSection(false);
         savePacketBtn = new QPushButton(savedPacketsTab);
         savePacketBtn->setObjectName(QString::fromUtf8("savePacketBtn"));
         savePacketBtn->setGeometry(QRect(2, 69, 72, 23));
@@ -495,11 +500,70 @@ public:
         stopBtn->setObjectName(QString::fromUtf8("stopBtn"));
         stopBtn->setGeometry(QRect(100, 380, 75, 23));
         MainWindowClass->setCentralWidget(centralWidget);
+        QWidget::setTabOrder(deviceBox, sendBtn);
+        QWidget::setTabOrder(sendBtn, ipTabs);
+        QWidget::setTabOrder(ipTabs, ip4ver);
+        QWidget::setTabOrder(ip4ver, ip4ihl);
+        QWidget::setTabOrder(ip4ihl, ip4tos);
+        QWidget::setTabOrder(ip4tos, ip4len);
+        QWidget::setTabOrder(ip4len, ip4id);
+        QWidget::setTabOrder(ip4id, ip4offset);
+        QWidget::setTabOrder(ip4offset, ip4proto);
+        QWidget::setTabOrder(ip4proto, ip4checksum);
+        QWidget::setTabOrder(ip4checksum, ip4res);
+        QWidget::setTabOrder(ip4res, ip4df);
+        QWidget::setTabOrder(ip4df, ip4mf);
+        QWidget::setTabOrder(ip4mf, ip4ttl);
+        QWidget::setTabOrder(ip4ttl, ip4src);
+        QWidget::setTabOrder(ip4src, ip4dest);
+        QWidget::setTabOrder(ip4dest, transportTabs);
+        QWidget::setTabOrder(transportTabs, udpSrc);
+        QWidget::setTabOrder(udpSrc, udpDst);
+        QWidget::setTabOrder(udpDst, udpLen);
+        QWidget::setTabOrder(udpLen, udpChecksum);
+        QWidget::setTabOrder(udpChecksum, tcpSrc);
+        QWidget::setTabOrder(tcpSrc, tcpDst);
+        QWidget::setTabOrder(tcpDst, tcpSeqNum);
+        QWidget::setTabOrder(tcpSeqNum, tcpAckNum);
+        QWidget::setTabOrder(tcpAckNum, tcpOffset);
+        QWidget::setTabOrder(tcpOffset, icmpType);
+        QWidget::setTabOrder(icmpType, tcpRes0);
+        QWidget::setTabOrder(tcpRes0, tcpRes1);
+        QWidget::setTabOrder(tcpRes1, tcpRes2);
+        QWidget::setTabOrder(tcpRes2, tcpNs);
+        QWidget::setTabOrder(tcpNs, tcpCwr);
+        QWidget::setTabOrder(tcpCwr, tcpEce);
+        QWidget::setTabOrder(tcpEce, tcpUrg);
+        QWidget::setTabOrder(tcpUrg, tcpAck);
+        QWidget::setTabOrder(tcpAck, tcpPsh);
+        QWidget::setTabOrder(tcpPsh, tcpRst);
+        QWidget::setTabOrder(tcpRst, tcpSyn);
+        QWidget::setTabOrder(tcpSyn, tcpFin);
+        QWidget::setTabOrder(tcpFin, tcpWs);
+        QWidget::setTabOrder(tcpWs, tcpChecksum);
+        QWidget::setTabOrder(tcpChecksum, tcpUrgPointer);
+        QWidget::setTabOrder(tcpUrgPointer, icmpCode);
+        QWidget::setTabOrder(icmpCode, icmpChecksum);
+        QWidget::setTabOrder(icmpChecksum, icmpId);
+        QWidget::setTabOrder(icmpId, icmpSeq);
+        QWidget::setTabOrder(icmpSeq, icmpData);
+        QWidget::setTabOrder(icmpData, ethTabs);
+        QWidget::setTabOrder(ethTabs, ethSrc);
+        QWidget::setTabOrder(ethSrc, ethDst);
+        QWidget::setTabOrder(ethDst, ethType);
+        QWidget::setTabOrder(ethType, etcTabs);
+        QWidget::setTabOrder(etcTabs, deviceDescription);
+        QWidget::setTabOrder(deviceDescription, selectPacketBtn);
+        QWidget::setTabOrder(selectPacketBtn, loadPacketFileBtn);
+        QWidget::setTabOrder(loadPacketFileBtn, packetsView);
+        QWidget::setTabOrder(packetsView, savePacketBtn);
+        QWidget::setTabOrder(savePacketBtn, sendAll);
+        QWidget::setTabOrder(sendAll, stopBtn);
 
         retranslateUi(MainWindowClass);
 
         ipTabs->setCurrentIndex(0);
-        transportTabs->setCurrentIndex(0);
+        transportTabs->setCurrentIndex(1);
         ethTabs->setCurrentIndex(0);
         etcTabs->setCurrentIndex(1);
 

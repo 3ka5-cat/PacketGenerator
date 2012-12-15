@@ -404,7 +404,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="udpTab">
      <attribute name="title">
@@ -1231,7 +1231,7 @@
         <x>-1</x>
         <y>-1</y>
         <width>387</width>
-        <height>87</height>
+        <height>101</height>
        </rect>
       </property>
      </widget>
@@ -1272,9 +1272,24 @@
         <x>78</x>
         <y>-1</y>
         <width>308</width>
-        <height>101</height>
+        <height>97</height>
        </rect>
       </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="headerHidden">
+       <bool>true</bool>
+      </property>
+      <attribute name="headerCascadingSectionResizes">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="headerStretchLastSection">
+       <bool>false</bool>
+      </attribute>
      </widget>
      <widget class="QPushButton" name="savePacketBtn">
       <property name="geometry">
@@ -1320,6 +1335,68 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>deviceBox</tabstop>
+  <tabstop>sendBtn</tabstop>
+  <tabstop>ipTabs</tabstop>
+  <tabstop>ip4ver</tabstop>
+  <tabstop>ip4ihl</tabstop>
+  <tabstop>ip4tos</tabstop>
+  <tabstop>ip4len</tabstop>
+  <tabstop>ip4id</tabstop>
+  <tabstop>ip4offset</tabstop>
+  <tabstop>ip4proto</tabstop>
+  <tabstop>ip4checksum</tabstop>
+  <tabstop>ip4res</tabstop>
+  <tabstop>ip4df</tabstop>
+  <tabstop>ip4mf</tabstop>
+  <tabstop>ip4ttl</tabstop>
+  <tabstop>ip4src</tabstop>
+  <tabstop>ip4dest</tabstop>
+  <tabstop>transportTabs</tabstop>
+  <tabstop>udpSrc</tabstop>
+  <tabstop>udpDst</tabstop>
+  <tabstop>udpLen</tabstop>
+  <tabstop>udpChecksum</tabstop>
+  <tabstop>tcpSrc</tabstop>
+  <tabstop>tcpDst</tabstop>
+  <tabstop>tcpSeqNum</tabstop>
+  <tabstop>tcpAckNum</tabstop>
+  <tabstop>tcpOffset</tabstop>
+  <tabstop>icmpType</tabstop>
+  <tabstop>tcpRes0</tabstop>
+  <tabstop>tcpRes1</tabstop>
+  <tabstop>tcpRes2</tabstop>
+  <tabstop>tcpNs</tabstop>
+  <tabstop>tcpCwr</tabstop>
+  <tabstop>tcpEce</tabstop>
+  <tabstop>tcpUrg</tabstop>
+  <tabstop>tcpAck</tabstop>
+  <tabstop>tcpPsh</tabstop>
+  <tabstop>tcpRst</tabstop>
+  <tabstop>tcpSyn</tabstop>
+  <tabstop>tcpFin</tabstop>
+  <tabstop>tcpWs</tabstop>
+  <tabstop>tcpChecksum</tabstop>
+  <tabstop>tcpUrgPointer</tabstop>
+  <tabstop>icmpCode</tabstop>
+  <tabstop>icmpChecksum</tabstop>
+  <tabstop>icmpId</tabstop>
+  <tabstop>icmpSeq</tabstop>
+  <tabstop>icmpData</tabstop>
+  <tabstop>ethTabs</tabstop>
+  <tabstop>ethSrc</tabstop>
+  <tabstop>ethDst</tabstop>
+  <tabstop>ethType</tabstop>
+  <tabstop>etcTabs</tabstop>
+  <tabstop>deviceDescription</tabstop>
+  <tabstop>selectPacketBtn</tabstop>
+  <tabstop>loadPacketFileBtn</tabstop>
+  <tabstop>packetsView</tabstop>
+  <tabstop>savePacketBtn</tabstop>
+  <tabstop>sendAll</tabstop>
+  <tabstop>stopBtn</tabstop>
+ </tabstops>
  <resources>
   <include location="mainwindow.qrc"/>
  </resources>

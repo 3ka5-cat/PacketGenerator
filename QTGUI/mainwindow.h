@@ -4,6 +4,8 @@
 #include <QtGui/QMainWindow>
 #include "ui_mainwindow.h"
 #include <QStringListModel>
+#include <QInputDialog>
+ #include <QRegExpValidator>
 #include <qtconcurrentrun.h>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -23,19 +25,31 @@ public:
 private slots:
 		void selectDevice(int selected);
 		void sendPacket(void);
-		void selectPacket(void);
+		int selectPacket(QModelIndex& index = QModelIndex());
 		void savePacket(void);
 		void loadPacketFile(void);
-		void setFields(void);
-		void getFormats(void);
+		void setFields(void);		
 		void oneAllTrigger(int state);
 
 private:	
+	void _sendPacket(void);
 	void getDevices(void);
 	void send(void);
 	bool validateBuild(Tokens format, Token name = "");
 	Token getEth(void);
+	bool setEth(Token str);
 	Token getIp4(void);
+	bool setIp4(Token str);
+	Token getUdp(void);
+	bool setUdp(Token str);
+	Token getTcp(void);
+	bool setTcp(Token str);	
+	Token getIcmp(void);
+	bool setIcmp(Token str);
+	bool getFormats(void);
+
+	//TODO: remove to the utils
+	void getDottedIp(unsigned long ip, QString& str);
 
 	Ui::MainWindowClass ui;	
 	QStringListModel* devsModel;	

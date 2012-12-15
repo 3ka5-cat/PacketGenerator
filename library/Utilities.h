@@ -48,19 +48,20 @@ public:
 		TokenAndRadix& dst, TokenAndRadix& type);
 	static bool createEthFormat(const Token& src, const Token& dst, const Token& type,
 		Token& result);
-	static Token createIPv4Format(const Token& version, 
+	static bool createIPv4Format(const Token& version, 
 		const Token& ihl, const Token& tos, const Token& pktLen, 
 		const Token& id, const Token& flags, const Token& offset, 
 		const Token& ttl, const Token& protocol, const Token& hdrChecksum, 
-		const Token& src, const Token& dst);
-	static Token createUDPFormat(const Token& src, const Token& dst,
-		const Token& checksum, const Token& pktLen);
-	static Token createTCPFormat(const Token& src, 
+		const Token& src, const Token& dst, Token& result);
+	static bool createUDPFormat(const Token& src, const Token& dst,
+		const Token& checksum, const Token& pktLen, Token& result);
+	static bool createTCPFormat(const Token& src, 
 		const Token& dst, const Token& seq, const Token& ack, 
 		const Token& offset, const Token& reserved, const Token& flags, 
 		const Token& windowSize, const Token& checksum, 
-		const Token& urgentPointer);
-	
+		const Token& urgentPointer, Token& result);
+	static bool createICMPFormat(const Token& type, const Token& code,
+		const Token& checksum, const Token& id, const Token& seq, Token& result);	
 private:	
 	static void hex2bytes(const std::string& src, unsigned char* dst, 
 		const size_t len);

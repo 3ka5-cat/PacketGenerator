@@ -110,17 +110,32 @@ void TreeModel::setupModelData(const QHash<QString, QStringList> &lines, TreeIte
 	parents << parent;	
 	QHash<QString, QStringList>::const_iterator i = lines.constBegin();
 	while (i != lines.constEnd()) {
+		//TODO: save all data to the top 'packet' node and add fancy output
+		//of packet header into children nodes
 		// Append a new item to the current parent's list of children.
-		QList<QVariant> columnData;	
+		//TreeItem* node = new TreeItem(i.key(), QList<QVariant>(), parents.last());	
+		QList<QVariant> columnData;
 		columnData << i.value();
-		TreeItem* Node = new TreeItem(i.key(), columnData, parents.last());		
+		TreeItem* node = new TreeItem(i.key(), columnData, parents.last());	
+		
 		for (int column = 0; column < i.value().count(); ++column) {			
-			columnData.clear();			
-			columnData << i.value()[column];		
-			Node->appendChild(new TreeItem(columnData, Node));
-			//Node->appendChild(new TreeItem(columnData, Node));
-		}		
-		parents.last()->appendChild(Node);
+			QStringList strs = i.value()[column].split(":");
+			if (strs.size() == 2) {
+				columnData.clear();	
+				columnData << i.value()[column];
+				TreeItem* hdrNode = new TreeItem(strs[0], columnData, node);
+				node->appendChild(hdrNode);
+				QStringList data = strs[1].split(";");
+				for (int i = 0; i < data.size() - 1; ++i) {
+					columnData.clear();	
+					columnData << data[i];
+					TreeItem* dataNode = new TreeItem(columnData, hdrNode);
+					hdrNode->appendChild(dataNode);
+				}
+			}
+		}
+		
+		parents.last()->appendChild(node);
 		++i;
 	}
 	

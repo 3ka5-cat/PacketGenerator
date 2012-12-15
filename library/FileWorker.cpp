@@ -21,8 +21,8 @@ bool FileWorker::savePacket(const Token& name, const Tokens& formats, const Toke
 				packetNode.append_attribute(TCPPROTO.c_str()) = formats[i].c_str();
 			else if (Utilities::startsWith(formats[i], ICMPPROTO))
 				packetNode.append_attribute(ICMPPROTO.c_str()) = formats[i].c_str();
-			else 
-				return false;
+			//else 
+				//return false;
 		}
 		return doc.save_file(fileName.c_str());
 	}

@@ -28,8 +28,7 @@ bool Utilities::startsWith(const string& text, const string& token)
 bool Utilities::createEthFormat(const Token& src, 
 	const Token& dst, const Token& type, Token& result)
 {
-	//"ETH2:111111111111,16;DCA97150BDBA,16;0800,16;"
-	Tokens list = split(src, TOKENDELIM);	
+	//"ETH2:111111111111,16;DCA97150BDBA,16;0800,16;"		
 	result = ETH2PROTO;
 	result += HEADERBODYDELIM;
 	if (addToken(result,src) && addToken(result,dst)
@@ -39,65 +38,67 @@ bool Utilities::createEthFormat(const Token& src,
 		return false;
 }
 
-Token Utilities::createIPv4Format(const Token& version, 
+bool Utilities::createIPv4Format(const Token& version, 
 	const Token& ihl, const Token& tos, const Token& pktLen, 
 	const Token& id, const Token& flags, const Token& offset, 
 	const Token& ttl, const Token& protocol, const Token& hdrChecksum, 
-	const Token& src, const Token& dst)
+	const Token& src, const Token& dst, Token& result)
 {
 	//IPv4:version,radix;ihl,radix;tos,radix;pktLen,radix;id,radix;flags,radix;
 	//offset,radix;ttl,radix;protocol,radix;hdrChecksum,radix;src,radix;dst,radix;
-	Token result = IPV4PROTO;
+	result = IPV4PROTO;
 	result += HEADERBODYDELIM;
-	addToken(result,version);
-	addToken(result,ihl);
-	addToken(result,tos);
-	addToken(result,pktLen);
-	addToken(result,id);
-	addToken(result,flags);
-	addToken(result,offset);
-	addToken(result,ttl);
-	addToken(result,protocol);
-	addToken(result,hdrChecksum);
-	addToken(result,src);
-	addToken(result,dst);
-	return result;
+	if (addToken(result,version) && addToken(result,ihl) && addToken(result,tos)
+		&& addToken(result,pktLen) && addToken(result,id) && addToken(result,flags)
+		&& addToken(result,offset) && addToken(result,ttl) && addToken(result,protocol)
+		&& addToken(result,hdrChecksum) && addToken(result,src) && addToken(result,dst))
+		return true;
+	else
+		return false;
 }
 
-Token Utilities::createUDPFormat(const Token& src, const Token& dst,
-	const Token& checksum, const Token& pktLen)
+bool Utilities::createUDPFormat(const Token& src, const Token& dst,
+	const Token& checksum, const Token& pktLen, Token& result)
 {
 	//UDP:src,radix;dst,radix;checksum,radix;pktLen,radix;
-	Token result = UDPPROTO;
+	result = UDPPROTO;
 	result += HEADERBODYDELIM;
-	addToken(result,src);
-	addToken(result,dst);
-	addToken(result,checksum);
-	addToken(result,pktLen);
-	return result;
+	if (addToken(result,src) && addToken(result,dst) &&	addToken(result,checksum)
+		&& addToken(result,pktLen))
+		return true;
+	else
+		return false;
 }
 
-Token Utilities::createTCPFormat(const Token& src, 
+bool Utilities::createTCPFormat(const Token& src, 
 	const Token& dst, const Token& seq, const Token& ack, 
 	const Token& offset, const Token& reserved, const Token& flags, 
 	const Token& windowSize, const Token& checksum, 
-	const Token& urgentPointer)
+	const Token& urgentPointer, Token& result)
 {
 	//TCP:src,radix;dst,radix;seq,radix;ack,radix;offset,radix;reserved,radix;
 	//flags,radix;windowSize,radix;checksum,radix;urgentPointer,radix;
-	Token result = TCPPROTO;
+	result = TCPPROTO;
 	result += HEADERBODYDELIM;
-	addToken(result,src);
-	addToken(result,dst);
-	addToken(result,seq);
-	addToken(result,ack);	
-	addToken(result,offset);
-	addToken(result,reserved);
-	addToken(result,flags);
-	addToken(result,windowSize);
-	addToken(result,checksum);
-	addToken(result,urgentPointer);
-	return result;
+	if (addToken(result,src) && addToken(result,dst) &&	addToken(result,seq) &&
+		addToken(result,ack) && addToken(result,offset) && addToken(result,reserved) &&
+		addToken(result,flags) && addToken(result,windowSize) && addToken(result,checksum)
+		&& addToken(result,urgentPointer))
+		return true;
+	return false;
+}
+
+bool Utilities::createICMPFormat(const Token& type, const Token& code,
+	const Token& checksum, const Token& id, const Token& seq, Token& result)
+{
+	//ICMP:type,radix;code,radix;checksum,radix;id,radix;seq,radix;
+	result = ICMPPROTO;
+	result += HEADERBODYDELIM;
+	if (addToken(result,type) && addToken(result,code) && addToken(result,checksum)
+		&& addToken(result,id) && addToken(result, seq))
+		return true;
+	else
+		return false;
 }
 
 bool Utilities::addToken(Token& result, const Token& token)
@@ -279,9 +280,9 @@ void Utilities::toBytes(const string& src, unsigned char* dst,
 										"four-octet fields "
 										"can be filled by decimal string");			
 		}
-		else {		
+		else {			
 			DbgMsg(__FILE__, __LINE__,
-				"Utilities::toBytes() ERROR: Invalid radix == %u\n", radix);
+				"Utilities::toBytes() ERROR: Invalid radix == %u\n", radix);					
 			throw invalid_argument("Invalid radix");
 		}
 	}		
@@ -327,6 +328,8 @@ void Utilities::dec2bytes(const string& src, unsigned char* dst,
 	// length argument is checked at toBytes(), and can't be less than 0
 	// and more than 4, so it can be safely used in memcpy
 	
+
+	//TODO: add check for max value for len, like in 2bits method
 	if (len == 4) {
 		value = htonl(value);
 		memcpy(dst,&value,len);

@@ -9,8 +9,8 @@ static LENGTH PORTLEN=16;
 static LENGTH SEQLEN=32;
 static LENGTH ACKLEN=32;
 static LENGTH OFFSETLEN=4;
-static LENGTH RESERVEDLEN=6;
-static LENGTH FLAGLEN=6;
+static LENGTH RESERVEDLEN=4;
+static LENGTH FLAGLEN=8;
 static LENGTH OFFSRESFLAGSLEN=OFFSETLEN+RESERVEDLEN+FLAGLEN;
 static LENGTH WINDOWSIZELEN=16;
 static LENGTH CHECKSUMLEN=16;
@@ -18,8 +18,8 @@ static LENGTH URGENTPOINTERLEN=16;
 
 // bit masks, network order
 static MASK OFFSET = 0xF0;
-static MASK RESERVED = 0xE;
-static MASK FLAGS = 0x3F;
+static MASK RESERVED = 0xF;
+static MASK FLAGS = 0xFF;
 
 static MASK FINFLAG = 0x1;
 static MASK SYNFLAG = 0x2;
@@ -27,6 +27,13 @@ static MASK RSTFLAG = 0x4;
 static MASK PSHFLAG = 0x8;
 static MASK ACKFLAG = 0x10;
 static MASK URGFLAG = 0x20;
+static MASK ECEFLAG = 0x40;
+static MASK CWRFLAG = 0x80;
+//TODO: replace ECN-nonce to the flag from reserved
+static MASK NSFLAG = 0x1;
+static MASK RES2 = 0x2;
+static MASK RES1 = 0x4;
+static MASK RES0 = 0x8;
 
 class PacketTCP
 {
@@ -79,8 +86,8 @@ public:
 	{
 		unsigned char _reserved = 0;		
 		Utilities::toBytes(reserved, &_reserved, 0, radix, RESERVEDLEN);	
-		//network order
-		*_offsResFlags |= (_reserved << 1) & RESERVED;		
+		//network order		
+		*_offsResFlags |= _reserved & RESERVED;		
 	};
 	void flags(const std::string& flags, const unsigned int radix)
 	{
